@@ -34,13 +34,11 @@ my \Gaussoids3 = "000000", "000011",
        "110000", "110111", "111011",
        "111101", "111110", "111111";
 
-sub binom($n, $k) { [*] ($n ... 0) Z/ 1 .. $k }
-
 sub MAIN ("3-stats", Int $n) {
     my \Squares = Faces($n, 2);
 
     sub Gaussoid-from-string ($_) {
-        Squares[(m:g/1/)».from];
+        Squares[(m:g/0/)».from];
     }
 
     multi sub Gaussoid-to-string (@G) {
@@ -48,18 +46,18 @@ sub MAIN ("3-stats", Int $n) {
         # I'd like to get the indices in Squares of the
         # faces in @G but it looks like objects aren't
         # compared by their attributes...?
-        my $s = '0' x Squares.elems;
+        my $s = '1' x Squares.elems;
         my @active = @G.map: { Squares.first(:k, * eq $_) };
-        $s.substr-rw($_,1) = '1' for @active;
+        $s.substr-rw($_,1) = '0' for @active;
         $s;
     }
 
     # FIXME
     multi sub Gaussoid-to-string(@G where .all.n == 3) {
         my $Squares = Faces(3,2);
-        my $s = '0' x $Squares.elems;
+        my $s = '1' x $Squares.elems;
         my @active = @G.map: { $Squares.first(:k, * eq $_) };
-        $s.substr-rw($_,1) = '1' for @active;
+        $s.substr-rw($_,1) = '0' for @active;
         $s;
     }
 
