@@ -42,7 +42,9 @@ multi sub MAIN {
     #
     # TODO: I forgot: did I make choices (apply (G4)) while
     # completing the gaussoids below by hand, or were all further
-    # choices deterministic?
+    # choices deterministic? If NOT, then it might be that there
+    # *is* a unique smaller gaussoid which I missed because of
+    # bad choices!
     #
     # In the paper, it will probably be better to show the whole
     # lattice of gaussoids which extend the base given above.
