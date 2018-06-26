@@ -57,7 +57,6 @@ multi sub infix:<⊆> (Face $a, Face $F) is export {
     $a.K̃ ⊆ $F.I ∪ $F.K̃
 }
 
-
 # Get all faces contained in F, then project down to the
 # free coordinates of $F. This takes an $F.k-dimensional
 # slice out of @faces.
@@ -68,6 +67,8 @@ multi sub infix:<↾> (Face @faces, Face $F) is export {
             my (@I, @K);
             my $i = 1;
             for $F.I {
+                # TODO: `given $_' seems like a no-op.
+                # Can't we use `when' clauses directly?
                 given $_ {
                     when * ∈ $a.I { @I.push: $i }
                     when * ∈ $a.K { @K.push: $i }
@@ -79,5 +80,19 @@ multi sub infix:<↾> (Face @faces, Face $F) is export {
     }
 }
 
-multi sub infix:<(contains)> (|c) is export { [⊆] |c }
-multi sub infix:<(restr)>    (|c) is export { [↾] |c }
+# New notation, preferred (by me)
+multi sub infix:<↘> (|c) is export { &infix:<↾>(|c) }
+
+# The inverse to ↘: it takes a set of faces of the $F.k-cube
+# and embeds them into the $F.n-cube, precisely into the
+# $F.k-face $F.
+multi sub infix:<↗> (Face @faces, Face $F) is export {
+    return gather {
+        for @faces -> $a {
+            my (@I, @K);
+            @I = $F.I[$a.I »-» 1];
+            @K = |$F.I[$a.K »-» 1], |$F.K;
+            take Face.new: :n($F.n), :@I, :@K;
+        }
+    }
+}
