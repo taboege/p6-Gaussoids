@@ -16,7 +16,7 @@ sub extmask ($s) is cached { /<{ $s.subst('1', '.', :g) }>/ }
 role Posetty { }
 multi sub infix:«≤» (Posetty $a, Posetty $b --> Bool:D) { so $b ~~ $a.&extmask  }
 multi sub infix:«≥» (Posetty $a, Posetty $b --> Bool:D) { $b ≤ $a               }
-multi sub infix:«∥» (Posetty $a, Posetty $b --> Bool:D) { $a !≤ $b and $1 !≥ $b }
+multi sub infix:«∥» (Posetty $a, Posetty $b --> Bool:D) { $a !≤ $b and $a !≥ $b }
 
 sub MAIN (Str:D $squares where m/^ <[01]>+ $/) {
     # How to find the minima in a poset: maintain a set of current
