@@ -11,6 +11,19 @@ class Face is export {
     has Int @.K is required; # positions of 1
     has Int @.K̃; # positions of 0
 
+    method from-word (Str $w where m/^ <[01*]>+ $/) {
+        # XXX: Indexing with IntStr <0> won't work unless we
+        # store :into a regular Hash (Str --> Any) because the
+        # hash returned by categorize is Any --> Any otherwise
+        # and doesn't coerce <0> and <1> correctly.
+        with $w.comb.antipairs.categorize(*.key, :as(1 + *.value), :into(my %)) {
+            self.new: :n($w.chars),
+                :I(*.Slip with .<*>),
+                :K(*.Slip with .<1>),
+                :K̃(*.Slip with .<0>),
+        }
+    }
+
     submethod TWEAK {
         $!k = @!I.elems;
         @!K̃ = ([$!n] ∖ @!I ∖ @!K).keys;

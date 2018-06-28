@@ -50,51 +50,51 @@ multi sub MAIN {
     # lattice of gaussoids which extend the base given above.
     # That can be extracted by pattern matching from the list of
     # 5-gaussoids.
-    my Face @G =
+    my Face @G <== map { Face.from-word: $_ } <==
         # -- Base in ***00
-        Face.new(:5n, :I(1,2), :K()),
-        Face.new(:5n, :I(1,2), :K(3)),
+        <**000>,
+        <**100>,
         # -- Base in *0**0
-        Face.new(:5n, :I(1,4), :K(3)),
+        <*01*0>,
         # -- Base in 1**0*
-        Face.new(:5n, :I(2,5), :K(1)),
+        <1*00*>,
         # -- Application of (G4) in ***00
-        Face.new(:5n, :I(1,3), :K()),
-        Face.new(:5n, :I(1,3), :K(2)),
+        <*0*00>,
+        <*1*00>,
         # -- Completion in *0**0
-        Face.new(:5n, :I(1,3), :K(4)),
-        Face.new(:5n, :I(1,4), :K()),
+        <*0*10>,
+        <*00*0>,
         # --- Iterative completion (done by hand) to make a gaussoid
-        Face.new(:5n, :I(1,2), :K(4)),
-        Face.new(:5n, :I(1,4), :K(2)),
-        Face.new(:5n, :I(1,2), :K(3,4)),
-        Face.new(:5n, :I(1,3), :K(2,4)),
-        Face.new(:5n, :I(1,4), :K(2,3)),
-        Face.new(:5n, :I(1,2), :K(5)),
-        Face.new(:5n, :I(2,5), :K()),
+        <**010>,
+        <*10*0>,
+        <**110>,
+        <*1*10>,
+        <*11*0>,
+        <**001>,
+        <0*00*>,
     ;
-    my Face @H =
+    my Face @H <== map { Face.from-word: $_ } <==
         # -- Base in ***00
-        Face.new(:5n, :I(1,2), :K()),
-        Face.new(:5n, :I(1,2), :K(3)),
+        <**000>,
+        <**100>,
         # -- Base in *0**0
-        Face.new(:5n, :I(1,4), :K(3)),
+        <*01*0>,
         # -- Bas ein 1**0*
-        Face.new(:5n, :I(2,5), :K(1)),
+        <1*00*>,
         # -- Application of (G4) in ***00
-        Face.new(:5n, :I(2,3), :K()),
-        Face.new(:5n, :I(2,3), :K(1)),
+        <0**00>,
+        <1**00>,
         # -- Completion in 1**0*
-        Face.new(:5n, :I(2,5), :K(1,3)),
-        Face.new(:5n, :I(2,3), :K(1,5)),
+        <1*10*>,
+        <1**01>,
         # --- Iterative completion (done by hand) to make a gaussoid
-        Face.new(:5n, :I(1,2), :K(3,4)),
-        Face.new(:5n, :I(1,4), :K(2,3)),
-        Face.new(:5n, :I(1,2), :K(5)),
-        Face.new(:5n, :I(2,5), :K()),
-        Face.new(:5n, :I(2,3), :K(5)),
-        Face.new(:5n, :I(1,2), :K(3,5)),
-        Face.new(:5n, :I(2,5), :K(3)),
+        <**110>,
+        <*11*0>,
+        <**001>,
+        <0*00*>,
+        <0**01>,
+        <**101>,
+        <0*10*>,
     ;
 
     say Gaussoid-to-string(5, @G);
