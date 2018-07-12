@@ -118,5 +118,6 @@ multi sub MAIN (*@A where { .all ~~ /^<[01*]>+$/ and .race».chars.squish == 1 }
     say '-' x 80;
     for completions($n, @H) -> @G {
         say Gaussoid-to-string($n, @G);
+        say .Str for @G;
     }
 }
