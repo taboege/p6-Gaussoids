@@ -22,15 +22,30 @@ sub neighbors ($d, $n, $k, $p, $q) {
 }
 
 sub binom ($n, $k) {
+    return 0 if $k > $n;
     ([*] ($n-$k) ^.. $n) /
     ([*] 1 .. $k);
 }
 
-sub MAIN (Int $n, Int $k, Int $p, Int $q) {
+multi sub MAIN (Int $n, Int $k, Int $p, Int $q, Bool :$enumerate) {
     my $d = Faces($n, $k).head;
     my $neighbors = +neighbors($d, $n, $k, $p, $q);
     my $vertices = binom($n, $k) * 2**($n-$k);
     say 'Degree:   ', $neighbors;
     say 'Vertices: ', $vertices;
     say 'Complete graph' if $neighbors == $vertices-1;
+}
+
+multi sub MAIN (Int $n, Int $k, Int $p, Int $q, Bool :$formula!) {
+    die "We need n ≥ 2k for this formula" if $n < 2*$k;
+    my $sum = sum gather {
+        for (0..($n-$k)) X (0..$k) -> ($m, $j) {
+            next if $p < $m + 2*$q - min($j, $q);
+            take binom($k,$j)*2**($k-$j) *  # this consumes all *'s of the first k-face
+                 binom($n-$k,$k-$j) *       # put the rest of the *'s of the second one
+                 binom($n-2*$k+$j, $m) *    # place a disagreement of size m
+                 1                          # all other positions are determined
+        }
+    }
+    say 'Degree:   ', -1+$sum; # no loops
 }
