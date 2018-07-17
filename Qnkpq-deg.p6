@@ -37,10 +37,10 @@ multi sub MAIN (Int $n, Int $k, Int $p, Int $q, Bool :$enumerate) {
 }
 
 multi sub MAIN (Int $n, Int $k, Int $p, Int $q, Bool :$formula!) {
-    die "We need n ≥ 2k for this formula" if $n < 2*$k;
     my $sum = sum gather {
         for (0..($n-$k)) X (0..$k) -> ($m, $j) {
-            next if $p < $m + 2*$q - min($j, $q);
+            next unless $n - $k ≥ $m + $k - $j;        # need enough 0's and 1's to disagree and non-intersect
+            next unless $p ≥ $m + 2*$q - min($j, $q);  # need enough dimension to repair disagreement and intersections
             take binom($k,$j)*2**($k-$j) *  # this consumes all *'s of the first k-face
                  binom($n-$k,$k-$j) *       # put the rest of the *'s of the second one
                  binom($n-2*$k+$j, $m) *    # place a disagreement of size m
