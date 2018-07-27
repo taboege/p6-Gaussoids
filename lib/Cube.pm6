@@ -109,3 +109,8 @@ multi sub infix:<↗> (Face @faces, Face $F) is export {
         }
     }
 }
+
+# Compute the dual face by exchanging K and K̃.
+multi sub postfix:<°> (Face $d --> Face) is tighter(&infix:<↘>) is export {
+    .new: :n(.n), :I(.I), :K(.K̃) with $d;
+}
