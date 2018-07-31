@@ -1,5 +1,6 @@
 #!/usr/bin/env perl6
 
+use lib 'lib';
 use Cube;
 
 sub share-face ($d, $f, $q --> Bool) {

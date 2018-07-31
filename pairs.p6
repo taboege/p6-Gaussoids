@@ -25,7 +25,7 @@ multi sub Gaussoid-to-string ($n, @G) {
 # Takes dimension n and a list of n-gaussoids on stdin.
 # It prints the (n-1)-gaussoids in the opposite faces
 # 0***...* and 1***...*.
-sub MAIN (Int $n where * ≥ 4) {
+multi sub MAIN (Int $n where * ≥ 4, Bool :$decompose?) {
     my $d = Face.new: :$n, :I(2..$n), :K();
     for $*IN.lines {
         my Face @G = Gaussoid-from-string($n, $_);
@@ -34,4 +34,18 @@ sub MAIN (Int $n where * ≥ 4) {
         print Gaussoid-to-string($n - 1, @G ↘ $d°);
         NEXT say "";
     }
+}
+
+# Takes a pair of n-gaussoids and prints the binary indicator
+# vector of squares in the (n+1)-cube where the pair was
+# prescribed into 0***...* and 1***...*.
+multi sub MAIN (Int $n where * ≥ 4, $G, $H, Bool :$compose!) {
+    die "G and H are of different dimension" if $G.chars ≠ $H.chars;
+    my $d = Face.new: :$n, :I(2..$n), :K();
+    # FIXME: The type constraints in various signatures make this so ugly
+    my Face @G = Gaussoid-from-string($n-1, $G);
+    @G ↗= $d;
+    my Face @H = Gaussoid-from-string($n-1, $H);
+    @H ↗= $d°;
+    say Gaussoid-to-string($n, @G.append(@H).unique);
 }
