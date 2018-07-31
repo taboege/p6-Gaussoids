@@ -5,6 +5,7 @@
 # n-cube with an edge between two faces d and f iff there is a
 # p-face s which intersects d and f in at least q dimensions each.
 
+use lib 'lib';
 use Cube;
 
 # Lighter printing
