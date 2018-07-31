@@ -1,5 +1,13 @@
 #!/usr/bin/env perl6
 
+# FIXME: The algorithm is broken, it doesn't do what it advertises.
+# It finds a bunch of gaussoid extensions to a set of squares, but
+# they are not guaranteed to be all minimal extensions, i.e.
+# gaussoid closures, and some might be repeated.
+#
+# All minimal closures are among the output, though.
+
+use lib 'lib';
 use Cube;
 
 my \Gaussoids3 = "000000", "000011",
@@ -75,6 +83,22 @@ sub violated ($n, Face @H --> Face) {
 # It can happen that we fix the same 3-face multiple times,
 # because of feedback from fixing an adjacent 3-face (which
 # shares a 2-face with one we fixed previously).
+#
+#
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# FIXME: This procedure doesn't give
+# minimal extensions only. Try to join
+# the two full gaussoids with pairs.p6
+# and put it into this script with --binary.
+# You see repeated minimal extensions and
+# an extension (the full (n+1)-gaussoid)
+# which is certainly not minimal.
+#
+# Feedback into faces which we thought we
+# fixed does happen.
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#
+#
 sub completions-step ($n, Face @H) {
     take @H andthen return if not my $c = violated($n, @H);
     # Apply all the minimal extensions in that 3-face,
@@ -118,6 +142,16 @@ multi sub MAIN (*@A where { .all ~~ /^<[01*]>+$/ and .race».chars.squish == 1 }
     say '-' x 80;
     for completions($n, @H) -> @G {
         say Gaussoid-to-string($n, @G);
-        say .Str for @G;
+#        say .Str for @G;
+    }
+}
+
+multi sub MAIN (Int $n, $H, Bool :$binary!) {
+    my Face @H = Gaussoid-from-string($n, $H);
+    say Gaussoid-to-string($n, @H);
+    say '-' x 80;
+    for completions($n, @H) -> @G {
+        say Gaussoid-to-string($n, @G);
+#        say .Str for @G;
     }
 }
