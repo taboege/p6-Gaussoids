@@ -83,35 +83,66 @@ sub violated ($n, Face @H --> Face) {
 # It can happen that we fix the same 3-face multiple times,
 # because of feedback from fixing an adjacent 3-face (which
 # shares a 2-face with one we fixed previously).
-#
-#
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# FIXME: This procedure doesn't give
-# minimal extensions only. Try to join
-# the two full gaussoids with pairs.p6
-# and put it into this script with --binary.
-# You see repeated minimal extensions and
-# an extension (the full (n+1)-gaussoid)
-# which is certainly not minimal.
-#
-# Feedback into faces which we thought we
-# fixed does happen.
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#
-#
-sub completions-step ($n, Face @H) {
+sub extensions-step ($n, Face @H) {
     take @H andthen return if not my $c = violated($n, @H);
     # Apply all the minimal extensions in that 3-face,
     # then continue fixing the resulting set.
     for MinimalExtensions3(Gaussoid-to-string 3, @H ↘ $c) -> $ext {
         my Face @P = @H.clone.append: $ext ↗ $c;
         @P .= unique: with => &[eqv];
-        completions-step $n, @P;
+        extensions-step $n, @P;
     }
 }
 
+# Return as-few-as-we-can extensions of the given set of squares.
+# It is guaranteed that all minimal extensions are among the
+# ones we return, but there might be non-minimal ones.
+sub extensions ($n, Face @H --> Seq) {
+    gather { extensions-step($n, @H) }
+}
+
+# Filter the result of &extensions to produce only the minimal extensions,
+# i.e. completions or closures of the given set of squares @H.
+#
+# This step is expensive as it uses a buffer (not a Seq) of linear size
+# in the number of &extensions obtained and quadratic time. Would like to
+# know how many extensions I should expect as a function of $n.
+#
+# The filtering is necessary, for without it, we don't get minimal
+# extensions only, as this example shows:
+#
+#   $ ./completion.p6 --binary 4 111111111111000000000000  # version calling extensions directly
+#   111111111111000000000000
+#   --------------------------------------------------------------------------------
+#   111100000000000000000000
+#   000000000000000000000000
+#   000000001111000000000000
+#   000000001111000000000000
+#   000000001111000000000000
+#   000011110000000000000000
+#   000000001111000000000000
+#
+# The full gaussoid /^0+$/ is clearly not minimal. It is also not nice that
+# some extensions are repeated in the output, but that would be a smaller
+# problem. With the filtering in &completions, these two issues are fixed:
+#
+#   $ ./completion.p6 --binary 4 111111111111000000000000  # using completions
+#   111111111111000000000000
+#   --------------------------------------------------------------------------------
+#   111100000000000000000000
+#   000011110000000000000000
+#   000000001111000000000000
 sub completions ($n, Face @H --> Seq) {
-    gather { completions-step($n, @H) }
+    my @exts = extensions($n, @H);
+    my @binary = @exts.map({ Gaussoid-to-string($n, $_) });
+    gather {
+        EXTENSION: for 0..^@exts -> $i {
+            for $i^..^@exts -> $j {
+                next EXTENSION if @binary[$i] ~~ @binary[$j].&extmask;
+            }
+            take @exts[$i];
+        }
+    }
 }
 
 # Compute the set of minimal extensions to gaussoids of the given set
@@ -126,6 +157,8 @@ sub completions ($n, Face @H --> Seq) {
 #           00100011111111111101011111111111001010111111111100010111111111111111111111111111
 #       This is indeed true. These are the only two minimal extensions.
 #       They have the same cardinality but are non-isomorphic.
+#           00100011111111111101011111111111001010111111111100010111111111111111111111111111
+#           00000111000101110001011111111111111111111111111100111111111111111111111111111111
 #
 #  2. '**000' '**100' '1*00*'
 #       --> should have two minimal completions with
