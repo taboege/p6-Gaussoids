@@ -1,12 +1,5 @@
 #!/usr/bin/env perl6
 
-# FIXME: The algorithm is broken, it doesn't do what it advertises.
-# It finds a bunch of gaussoid extensions to a set of squares, but
-# they are not guaranteed to be all minimal extensions, i.e.
-# gaussoid closures, and some might be repeated.
-#
-# All minimal closures are among the output, though.
-
 use lib 'lib';
 use Cube;
 
@@ -136,12 +129,23 @@ sub completions ($n, Face @H --> Seq) {
     my @exts = extensions($n, @H);
     my @binary = @exts.map({ Gaussoid-to-string($n, $_) });
     gather {
-        EXTENSION: for 0..^@exts -> $i {
-            for $i^..^@exts -> $j {
+        EXTENSION: for ^@exts -> $i {
+            for ^@exts .grep(* ≠ $i) -> $j {
                 next EXTENSION if @binary[$i] ~~ @binary[$j].&extmask;
             }
             take @exts[$i];
         }
+    }
+}
+
+sub pretty-print ($n, @H) {
+    # XXX: @H is not actually a gaussoid, but the sub works for any
+    # set of squares in the n-cube. I should rename it.
+    say Gaussoid-to-string($n, @H);
+    say '-' x 80;
+    for completions($n, @H) -> @G {
+        say Gaussoid-to-string($n, @G);
+#        say .Str for @G;
     }
 }
 
@@ -168,23 +172,10 @@ sub completions ($n, Face @H --> Seq) {
 multi sub MAIN (*@A where { .all ~~ /^<[01*]>+$/ and .race».chars.squish == 1 }) {
     my $n = @A[0].chars;
     my Face @H <== map { Face.from-word: $_ } <== @A;
-
-    # XXX: @H is not actually a gaussoid, but the sub works for any
-    # set of squares in the n-cube. I should rename it.
-    say Gaussoid-to-string($n, @H);
-    say '-' x 80;
-    for completions($n, @H) -> @G {
-        say Gaussoid-to-string($n, @G);
-#        say .Str for @G;
-    }
+    pretty-print $n, @H;
 }
 
 multi sub MAIN (Int $n, $H, Bool :$binary!) {
     my Face @H = Gaussoid-from-string($n, $H);
-    say Gaussoid-to-string($n, @H);
-    say '-' x 80;
-    for completions($n, @H) -> @G {
-        say Gaussoid-to-string($n, @G);
-#        say .Str for @G;
-    }
+    pretty-print $n, @H;
 }
