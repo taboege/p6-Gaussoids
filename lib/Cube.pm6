@@ -42,7 +42,8 @@ class Face is export {
         sort *[0] ==> map *[1] ==>
         join '' ==> my $word;
         # XXX: The symbol notation [I|K] assumes single-digit numbers.
-        "[{@!I.sort.join}|{@!K.sort.join}]($word)"
+        #"[{@!I.sort.join}|{@!K.sort.join}]($word)"
+        $word
     }
 }
 

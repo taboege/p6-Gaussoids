@@ -8,18 +8,6 @@
 use lib 'lib';
 use Cube;
 
-# Lighter printing
-use MONKEY-TYPING;
-augment class Face {
-    method gist {
-        my @map = @!I => '*', @!K => '1', @!K̃ => '0';
-        @map.map: { slip .key X .value } ==>
-        sort *[0] ==> map *[1] ==>
-        join '' ==> return;
-    }
-    #method gist { "[{@!I.sort.join}|{@!K.sort.join}]" }
-}
-
 sub share-face ($d, $f, $q --> Bool) {
     $d.K ⊆ $f.I ∪ $f.K and $f.K ⊆ $d.I ∪ $d.K  # intersection non-empty?
     and $q <= $d.I ∩ $f.I       # only then we can compute the dimension
@@ -40,8 +28,7 @@ sub neighbors ($d, $n, $k, $p, $q) {
 
 sub MAIN (Int $n, Int $k, Int $p, Int $q) {
     for Faces($n, $k) -> $d {
-        print $d.gist, ': ';
-        say neighbors($d, $n, $k, $p, $q)».gist
-            .join(', ');
+        print ~$d, ': ';
+        say neighbors($d, $n, $k, $p, $q)».Str.join(', ');
     }
 }

@@ -7,22 +7,12 @@ my @faces;
 
 use experimental :cached;
 
-use MONKEY-TYPING;
-augment class Face {
-    method gist {
-        my @map = @!I => '*', @!K => '1', @!K̃ => '0';
-        @map.map: { slip .key X .value } ==>
-        sort *[0] ==> map *[1] ==>
-        join '' ==> return;
-    }
-}
-
 sub label (Str() $s) is cached {
     "N" ~ @faces.first(:k, $s);
 }
 
 multi sub MAIN ($n, $k) {
-    @faces = Faces($n, $k)».gist;
+    @faces = Faces($n, $k)».Str;
     my rule adj-list { $<node>=<[01*]>+ ':' [ $<adj>=<[01*]>+ ]* % ',' };
 
     print q:to/END/;
