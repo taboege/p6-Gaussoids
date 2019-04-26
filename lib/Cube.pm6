@@ -11,6 +11,10 @@ class Face is export {
     has Int @.K is required; # positions of 1
     has Int @.K̃; # positions of 0
 
+    method WHICH {
+        ValueObjAt.new: "Cube::Face|$!n|$!k|{@!I.sort.join(',')}|{@!K.sort.join(',')}"
+    }
+
     method from-word (Str $w where m/^ <[01*]>+ $/) {
         # XXX: Indexing with IntStr <0> won't work unless we
         # store :into a regular Hash (Str --> Any) because the
@@ -114,4 +118,9 @@ multi sub infix:<↗> (Face @faces, Face $F) is export {
 # Compute the dual face by exchanging K and K̃.
 multi sub postfix:<°> (Face $d --> Face) is tighter(&infix:<↘>) is export {
     .new: :n(.n), :I(.I), :K(.K̃) with $d;
+}
+
+# Permute the axes of the cube.
+multi sub infix:<⤩> (Face \Δ, @π) is export {
+    .new: :n(.n), :I(@π[.I »-» 1]), :K(@π[.K »-» 1]) with Δ
 }
