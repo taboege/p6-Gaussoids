@@ -5,7 +5,7 @@ use Cube;
 
 use experimental :cached;
 
-sub Squares ($n) is cached { Faces($n, 2) }
+sub Squares ($n) #`(is cached) { Faces($n, 2) }
 
 sub Gaussoid-from-string ($n, $_) {
     Squares($n)[(m:g/0/)».from];
@@ -20,7 +20,18 @@ multi sub Gaussoid-to-string ($n, @G) {
 }
 
 # List all k-minors of the n-gaussoid G given in binary.
-sub MAIN ($n, $k, $G) {
+multi MAIN ($n, $k, $G) {
     my Face @G = Gaussoid-from-string($n, $G);
-    say Gaussoid-to-string($k, @G ↘ $_) for Faces($n, $k);
+    say "$_.Str(): " ~ Gaussoid-to-string($k, @G ↘ $_) for Faces($n, $k);
+}
+
+# Do not suppose that the input is a binary encoding of
+# a set of squares. Just use the faces to index $G as a
+# string. That way, we can list minors of oriented gaussoids
+# just as well.
+multi MAIN ($n, $k, $G, Bool :$raw where *.so) {
+    for Faces($n, $k) -> \Δ {
+        my @indices = Squares($n).grep: * ⊆ Δ, :k;
+        say "{ Δ.Str }: " ~ $G.comb[@indices].join;
+    }
 }
