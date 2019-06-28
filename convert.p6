@@ -38,6 +38,13 @@ multi sub MAIN ($G where m/^ <[01]>+ $/, Int :binary(:$n)!) {
     Gaussoid-from-string($n, $G).deepmap(*.Str)».say;
 }
 
+# Same as --binary but we don't care about it being zeros and ones.
+# Find any zeros and report the corresponding squares.
+multi sub MAIN ($O, Int :raw(:$n)!) {
+    my @O = $O.comb;
+    say join " ", ~« Squares($n).grep({ @O[$++] eq '0' })
+}
+
 # Converts a set of squares of the n-cube into the binary
 # notation according to the authoritative ordering of squares.
 #

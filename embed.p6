@@ -34,7 +34,7 @@ sub mapping (\ingredients) {
 
 # Take a list of «gaussoid:face» strings and assemble a string that
 # contains each gaussoid in the given face (of a higher cube).
-multi MAIN (*@spec where { .elems && .all ~~ /<[01+-]>+ ':' <[01*]>+/ }, Bool :$raw!) {
+multi MAIN (*@spec where { .elems && .all ~~ /<[.?01+-]>+ ':' <[01*]>+/ }, Bool :$raw!) {
     my $n = chars @spec[0] ~~ / <?after ':'> .* /;
     say raw-to-string $n, mapping ingredients @spec;
 }
